@@ -1080,13 +1080,12 @@ function rewindSim(box,done){
   sl.oninput=()=>{f=sl.value/1000;auto=null;};
   $('#rw',c).onclick=()=>{auto=-1;ac();};
   $('#ff',c).onclick=()=>{auto=1;ac();};
-  if(banged)$('#ff',c).disabled=false;
+  if(banged){$('#ff',c).disabled=false;done();} // 전에 빅뱅을 이미 봤다면(이전 버튼·새로고침·지도 왕복) 바로 통과
   const mix=(a,b,t)=>a.map((x,i)=>Math.round(lerp(x,b[i],t)));
   const heat=t=>{const st=[[30,42,107],[122,59,143],[255,140,70],[255,246,216]];const x=clamp(t,0,1)*3;const i=Math.min(2,Math.floor(x));return mix(st[i],st[i+1],x-i);};
   addTick(dt=>{
     if(auto){f=clamp(f+auto*dt*.28,0,1);sl.value=Math.round(f*1000);if(f<=0||f>=1)auto=null;}
-    if(f<=0.0005&&!flash&&!banged){banged=true;flash=1.2;sfx('boom');gain('m5-bang',10,sl);toast('빅뱅! 약 138억 년 전');burst(window.innerWidth/2,window.innerHeight/2,90);$('#ff',c).disabled=false;done();}
-    if(banged&&!S.solved['m5-bang']){}
+    if(f<=0.01&&!flash&&!banged){banged=true;flash=1.2;sfx('boom');gain('m5-bang',10,sl);toast('빅뱅! 약 138억 년 전');burst(window.innerWidth/2,window.innerHeight/2,90);$('#ff',c).disabled=false;done();}
     const a=.02+.98*Math.pow(f,1.3);const hot=clamp(Math.log(1/a)/Math.log(50),0,1);
     const g=o.ctx,W=o.w,H=o.h;g.clearRect(0,0,W,H);const cx=W/2,cy=H/2,Rm=Math.min(W,H)*.44,r=Math.max(3,a*Rm);
     const inner=heat(hot+.15),edge=heat(hot);
@@ -1205,5 +1204,3 @@ window.addEventListener('resize',()=>{fitSky();fitFx();});
 fitSky();fitFx();hud();showMap();requestAnimationFrame(loop);
 })();
 </script>
-
-</body></html>
